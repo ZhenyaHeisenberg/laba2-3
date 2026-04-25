@@ -61,7 +61,6 @@ echo "1:title:desc:author:message:created:3" | python -m src read --stdin
 `python -m pytest --cov=src --cov-report=term-missing`
 
 <pre>
-
 Name                       Stmts   Miss  Cover   Missing
 --------------------------------------------------------
 src\models\generator.py       12      0   100%
@@ -69,6 +68,7 @@ src\models\task_queue.py      46      1    98%   23
 --------------------------------------------------------
 TOTAL                         58      1    98%
 Required test coverage of 80.0% reached. Total coverage: 98.28%
+</pre>
 
 <h2>Отладка</h2>
 <p>Код покрыт тестами на 98%, а так же лоиггирует ошибки, связанные с приёмом задач неверного формата</p>
