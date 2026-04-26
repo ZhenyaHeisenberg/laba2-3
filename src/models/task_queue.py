@@ -1,10 +1,34 @@
 from typing import Iterator
-from src.contracts.message import Message
 from src.models.task import Task
 
+class TaskIterator:
+    def __init__(self, source: Iterator[Task], buffer: list):
+        self._iterator = iter(source) if source else None
+        self._buffer = buffer
+        self._position = 0
+        self._finished = False
+    
+    def __iter__(self):
+        return self
+    
+    def __next__(self) -> Task:
+        if self._position < len(self._buffer):
+            task = self._buffer[self._position]
+            self._position += 1
+            return task
+        
+        if not self._finished and self._iterator:
+            try:
+                task = next(self._iterator)
+                self._buffer.append(task)
+                self._position += 1
+                return task
+            except StopIteration:
+                self._finished = True
+        
+        raise StopIteration
 
 class TaskQueue:
-    
     def __init__(self, source: Iterator[Task]):
         self._source = source
         self._buffer = []
@@ -30,12 +54,8 @@ class TaskQueue:
                 )
         return cls(convert())
     
-    def __iter__(self) -> Iterator[Task]:
-        yield from self._buffer
-        
-        for task in self._source:
-            self._buffer.append(task)
-            yield task
+    def __iter__(self) -> TaskIterator:
+        return TaskIterator(self)
     
     def filter_by_status(self, status: str) -> "TaskQueue":
         def filtered():
